@@ -10,35 +10,39 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 export class GameapiService {
   
 
-  // API_KEY = 'a0e5c263be7a96b8df205c354017ca71730b176c5';
+  API_KEY = '0e5c263be7a96b8df205c354017ca71730b176c5';
+  baseUrl = 'https://www.giantbomb.com/api'
   
 
   constructor(private http: HttpClient) { }
 
 
   getGame() {
-    const api = `https://www.giantbomb.com/api/platforms/?api_key=0e5c263be7a96b8df205c354017ca71730b176c5&format=json&field_list=name,image`;
+    const api = `${this.baseUrl}/platforms/?api_key=${this.API_KEY}&format=json&field_list=name,image`;
     return this.http.get(api);
   }
-  // getGameList(list_id: number) {
-  //   const api = `https://www.giantbomb.com/api/platforms/?api_key=0e5c263be7a96b8df205c354017ca71730b176c5&format=json&field_list=name,image`;
-  //   return this.http.get(api);
-  // }
+  
+  getGameList(id: number) {
+    const api = `${this.baseUrl}/games/?api_key=${this.API_KEY}&format=json&fields=${id}`;
+    return this.http.get(api);
+  }
 
   // search(terms: Observable<string>) {
   //   return terms.subscribe(term => this.searchEntries(term));
   // }
-
-  searchEntries(name) {
-    const api = `http://www.giantbomb.com/api/games/?format=json&api_key=0e5c263be7a96b8df205c354017ca71730b176c5&filter=${name}`;
-    return this.http.get(api);
-  }
 
   search(terms: Observable<string>) {
     return terms.pipe(debounceTime(400),
       distinctUntilChanged(),
       switchMap(term => this.searchEntries(term)));
   }
+
+  searchEntries(term) {
+    const api = `${this.baseUrl}/search/?api_key=${this.API_KEY}&format=json&query=${term}&resources=game`;
+    return this.http.get(api);
+  }
+
+  
 
   getName() {
     const api = 'https://www.giantbomb.com/api/platforms/?api_key=0e5c263be7a96b8df205c354017ca71730b176c5&format=json&field_list=name,image';
